@@ -1,0 +1,7 @@
+projectKey=linking-linking-server-code-verify
+serverUrl=http://sonarqube.dev.qiniu.io
+serverVersion=7.9.0.26994
+branch=pr114
+dashboardUrl=http://sonarqube.dev.qiniu.io/dashboard?id=linking-linking-server-code-verify&branch=pr114&resolved=false
+ceTaskId=AW7UaIpwx3APsy8usKhW
+ceTaskUrl=http://sonarqube.dev.qiniu.io/api/ce/task?id=AW7UaIpwx3APsy8usKhW
