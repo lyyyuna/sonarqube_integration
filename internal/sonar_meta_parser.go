@@ -7,9 +7,9 @@ import (
 
 // SonarProjectProperties defines the struct of sonar-project.properties
 type SonarProjectProperties struct {
-	HostUrl    string `properties:"sonar.host.url,omitempty"`
-	ProjectKey string `properties:"sonar.projectKey,omitempty"`
-	Token      string `properties:"sonar.login,omitempty"`
+	HostUrl    string `properties:"sonar.host.url,default="`
+	ProjectKey string `properties:"sonar.projectKey,default="`
+	Token      string `properties:"sonar.login,default="`
 }
 
 type SonarReportTask struct {

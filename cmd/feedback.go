@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	feedbackComment     bool
+	nofeedbackComment   bool
 	sonarqubeURL        string
 	sonarqubeToken      string
 	githubTokenPath     string
@@ -22,7 +22,7 @@ var feedbackCmd = &cobra.Command{
 }
 
 func init() {
-	feedbackCmd.Flags().BoolVarP(&feedbackComment, "nocomment", "", false, "Toggle comment, whether to feedback details to GitHub PR comment or not, default is feedback.")
+	feedbackCmd.Flags().BoolVarP(&nofeedbackComment, "nocomment", "", false, "Toggle comment, whether to feedback details to GitHub PR comment or not, default is feedback.")
 	feedbackCmd.Flags().StringVarP(&sonarqubeURL, "server", "s", "", "Specify the SonarQube server url, if not specified, bot will get url from report-task.txt")
 	feedbackCmd.Flags().StringVarP(&sonarqubeToken, "token", "t", "xxxxxxxxxxxxxxxxxx", "Specify the SonarQube token to get authorized")
 	feedbackCmd.Flags().StringVarP(&githubTokenPath, "githubtokenpath", "", "/etc/github/oauth", "Specify the Github token path")
@@ -31,7 +31,7 @@ func init() {
 }
 
 func feedback(cmd *cobra.Command, args []string) {
-	if feedbackComment == false {
+	if nofeedbackComment == false {
 		log.Info("Bot will feeback to GitHub PR comment")
 	} else {
 		log.Info("Bot will not feeback to GitHub PR comment")
@@ -47,8 +47,14 @@ func feedback(cmd *cobra.Command, args []string) {
 	clientAnalysis := NewClientAnalysis(sonarqubeToken)
 	clientAnalysis.Property = p
 	clientAnalysis.Task = NewSonarReportTask(sonarReportTaskPath)
+	clientAnalysis.GithubTokenPath = githubTokenPath
 	//
 	// wait until the analysis is finished
 	clientAnalysis.WaitUntilFinished()
+	// feedback check status
 	clientAnalysis.FeedbackToCICheck()
+	// feedback comment or not
+	if nofeedbackComment == false {
+		clientAnalysis.FeedbackToPRComment()
+	}
 }

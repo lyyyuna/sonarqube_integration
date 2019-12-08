@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	PR_COMMENT_TITLE = "### Qiniu Code Static Anlysis Result"
+	PR_COMMENT_TITLE = "### Code Static Anlysis Result"
 )
 
 type GitHubClient struct {
@@ -66,7 +66,7 @@ func (c *GitHubClient) getEnvironmentVariables() error {
 	return nil
 }
 
-func (c *GitHubClient) GetMyRepoPullRequest() error {
+func (c *GitHubClient) getMyRepoPullRequest() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	pullNum, _ := strconv.Atoi(c.PullNumber)
@@ -79,7 +79,7 @@ func (c *GitHubClient) GetMyRepoPullRequest() error {
 	return nil
 }
 
-func (c *GitHubClient) DeletePreviousComments() error {
+func (c *GitHubClient) deletePreviousComments() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -105,6 +105,19 @@ func (c *GitHubClient) DeletePreviousComments() error {
 	return nil
 }
 
-func (c *GitHubClient) PostCommentsToPR() {
+func (c *GitHubClient) postCommentsToPR(body string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	pullNum, _ := strconv.Atoi(c.PullNumber)
 
+	body = PR_COMMENT_TITLE + "\n" + body
+	input := &github.IssueComment{
+		Body: &body,
+	}
+	_, _, err := c.Client.Issues.CreateComment(ctx, c.RepoOwner, c.RepoName, pullNum, input)
+	if err != nil {
+		log.Errorf("Fail to create the comment in the GitHub PR, the error is %v.", err)
+		return err
+	}
+	return nil
 }
