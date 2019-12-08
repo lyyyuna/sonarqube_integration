@@ -40,6 +40,15 @@ func feedback(cmd *cobra.Command, args []string) {
 	log.Infof("sonar-project.properties path is %v", sonarPropertiesPath)
 	log.Infof("report-task.txt path is %v", sonarReportTaskPath)
 
-	cfg := NewSonarProperty(sonarPropertiesPath)
-	log.Info(cfg.HostUrl)
+	p := NewSonarProperty(sonarPropertiesPath)
+	if sonarqubeToken == "" {
+		sonarqubeToken = p.Token
+	}
+	clientAnalysis := NewClientAnalysis(sonarqubeToken)
+	clientAnalysis.Property = p
+	clientAnalysis.Task = NewSonarReportTask(sonarReportTaskPath)
+	//
+	// wait until the analysis is finished
+	clientAnalysis.WaitUntilFinished()
+	clientAnalysis.FeedbackToCICheck()
 }

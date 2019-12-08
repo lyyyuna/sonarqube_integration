@@ -5,6 +5,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
+	"path"
+	"runtime"
+	"strings"
 )
 
 var cfgFile string
@@ -29,7 +32,14 @@ func Execute() {
 func init() {
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
+		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
+			s := strings.Split(f.Function, ".")
+			funcname := s[len(s)-1]
+			_, filename := path.Split(f.File)
+			return funcname, filename
+		},
 	})
+	log.SetReportCaller(true)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(feedbackCmd)
 }
