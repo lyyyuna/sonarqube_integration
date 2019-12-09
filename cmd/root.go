@@ -40,6 +40,7 @@ func init() {
 			line := strconv.Itoa(f.Line)
 			return "[" + funcname + "]", "[" + filename + ":" + line + "]"
 		},
+		ForceColors: true,
 	})
 	log.SetReportCaller(true)
 	rootCmd.AddCommand(versionCmd)
