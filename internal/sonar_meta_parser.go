@@ -16,7 +16,7 @@ type SonarReportTask struct {
 	ProjectKey    string `properties:"projectKey"`
 	ServerUrl     string `properties:"serverUrl"`
 	ServerVersion string `properties:"serverVersion"`
-	Branch        string `properties:"branch"`
+	Branch        string `properties:"branch,default="`
 	DashboardUrl  string `properties:"dashboardUrl"`
 	CeTaskId      string `properties:"ceTaskId"`
 	CeTaskUrl     string `properties:"ceTaskUrl"`
