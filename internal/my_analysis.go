@@ -63,7 +63,7 @@ func (c *ClientAnalysis) FeedbackToCICheck() {
 func (c *ClientAnalysis) FeedbackToPRComment() {
 	githubc, err := NewGitHubClient(c.GithubTokenPath)
 	if err != nil {
-		log.Error(err)
+		log.Error("Skip comment to GitHub PR, as no github token found, the error is ", err)
 		return
 	}
 
