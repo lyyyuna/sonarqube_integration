@@ -17,6 +17,7 @@ type ClientAnalysis struct {
 	webApi          *resty.Request
 	analysisId      string
 	GithubTokenPath string
+	WechatToken     string
 }
 
 func NewClientAnalysis(token string) *ClientAnalysis {

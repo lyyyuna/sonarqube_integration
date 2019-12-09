@@ -24,7 +24,7 @@ var feedbackCmd = &cobra.Command{
 func init() {
 	feedbackCmd.Flags().BoolVarP(&nofeedbackComment, "nocomment", "", false, "Toggle comment, whether to feedback details to GitHub PR comment or not, default is feedback.")
 	feedbackCmd.Flags().StringVarP(&sonarqubeURL, "server", "s", "", "Specify the SonarQube server url, if not specified, bot will get url from report-task.txt")
-	feedbackCmd.Flags().StringVarP(&sonarqubeToken, "token", "t", "xxxxxxxxxxxxxxxxxx", "Specify the SonarQube token to get authorized")
+	feedbackCmd.Flags().StringVarP(&sonarqubeToken, "token", "t", "", "Specify the SonarQube token to get authorized")
 	feedbackCmd.Flags().StringVarP(&githubTokenPath, "githubtokenpath", "", "/etc/github/oauth", "Specify the Github token path")
 	feedbackCmd.Flags().StringVarP(&sonarPropertiesPath, "sonarproperty", "", "./sonar-project.properties", "Specify the sonar-project.properties path")
 	feedbackCmd.Flags().StringVarP(&sonarReportTaskPath, "sonartask", "", "./.scannerwork/report-task.txt", "Specify the report-task.txt path")
@@ -51,10 +51,11 @@ func feedback(cmd *cobra.Command, args []string) {
 	//
 	// wait until the analysis is finished
 	clientAnalysis.WaitUntilFinished()
-	// feedback check status
-	clientAnalysis.FeedbackToCICheck()
 	// feedback comment or not
 	if nofeedbackComment == false {
 		clientAnalysis.FeedbackToPRComment()
 	}
+	// feedback check status
+	// this will panic, so it must be the last step
+	clientAnalysis.FeedbackToCICheck()
 }

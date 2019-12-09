@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -36,10 +37,12 @@ func init() {
 			s := strings.Split(f.Function, ".")
 			funcname := s[len(s)-1]
 			_, filename := path.Split(f.File)
-			return funcname, filename
+			line := strconv.Itoa(f.Line)
+			return "[" + funcname + "]", "[" + filename + ":" + line + "]"
 		},
 	})
 	log.SetReportCaller(true)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(feedbackCmd)
+	rootCmd.AddCommand(wechatCmd)
 }
