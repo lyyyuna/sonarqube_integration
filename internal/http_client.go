@@ -35,13 +35,25 @@ func (c *ClientAnalysis) searchOpenIssues() []SonarIssue {
 
 	var allIssues []SonarIssue
 	for i := 1; i < 10; i++ {
-		resp, err := c.webApi.
-			SetQueryParams(map[string]string{
+		var payload map[string]string
+		if c.Task.Branch == "" {
+			payload = map[string]string{
 				"componentKeys": c.Task.ProjectKey,
 				"statuses":      "OPEN",
 				"ps":            "500",
 				"p":             strconv.Itoa(i),
-			}).Get(targetUrl)
+			}
+		} else {
+			payload = map[string]string{
+				"componentKeys": c.Task.ProjectKey,
+				"statuses":      "OPEN",
+				"ps":            "500",
+				"p":             strconv.Itoa(i),
+				"branch":        c.Task.Branch,
+			}
+		}
+		resp, err := c.webApi.
+			SetQueryParams(payload).Get(targetUrl)
 		if err != nil {
 			log.Fatalf("Cannot connect to SonarQube server, the error is %v", err)
 		}
