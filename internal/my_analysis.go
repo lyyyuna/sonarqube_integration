@@ -68,10 +68,6 @@ func (c *ClientAnalysis) FeedbackToPRComment() {
 	}
 
 	openIssues := c.searchOpenIssues()
-	if len(openIssues) == 0 {
-		log.Info("No issues found, will not comment in the PR.")
-		//return
-	}
 	dashboardUrl := c.Task.DashboardUrl
 	link := fmt.Sprintf("\nClick [%v](%v) to view issue details\n", dashboardUrl, dashboardUrl)
 	rerunCmd := fmt.Sprintf("\nSay `/test %v` to re-run this static analysis\n", githubc.JobName)
@@ -82,6 +78,10 @@ func (c *ClientAnalysis) FeedbackToPRComment() {
 	err = githubc.deletePreviousComments()
 	if err != nil {
 		log.Error(err)
+		return
+	}
+	if len(openIssues) == 0 {
+		log.Info("No issues found, will not comment in the PR.")
 		return
 	}
 	err = githubc.postCommentsToPR(body)

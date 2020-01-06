@@ -83,9 +83,13 @@ func (c *GitHubClient) deletePreviousComments() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	opt := &github.PullRequestListCommentsOptions{}
+	//opt := &github.PullRequestListCommentsOptions{}
 	pullNum, _ := strconv.Atoi(c.PullNumber)
-	comments, _, err := c.Client.PullRequests.ListComments(ctx, c.RepoOwner, c.RepoName, pullNum, opt)
+	//comments, r, err := c.Client.PullRequests.ListComments(ctx, c.RepoOwner, c.RepoName, pullNum, opt)
+	comments, _, err := c.Client.Issues.ListComments(ctx, c.RepoOwner, c.RepoName, pullNum, nil)
+	log.Infoln(c.RepoOwner, c.RepoName, pullNum)
+	log.Infof("The total comments are: %v", len(comments))
+
 	if err != nil {
 		log.Errorf("Fail to get repository from GitHub, the error is %v", err)
 		return err
@@ -98,8 +102,8 @@ func (c *GitHubClient) deletePreviousComments() error {
 	}
 
 	for _, comment := range deletedComments {
-		_, err := c.Client.PullRequests.DeleteComment(ctx, c.RepoOwner, c.RepoName, comment)
-		log.Errorf("Fail to delete the comment, the error is %v", err)
+		r, _ := c.Client.PullRequests.DeleteComment(ctx, c.RepoOwner, c.RepoName, comment)
+		log.Infof("Try to delete the comment, is response is %v", r.Response.Body)
 	}
 
 	return nil
