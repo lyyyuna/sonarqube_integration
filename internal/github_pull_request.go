@@ -86,14 +86,27 @@ func (c *GitHubClient) deletePreviousComments() error {
 	//opt := &github.PullRequestListCommentsOptions{}
 	pullNum, _ := strconv.Atoi(c.PullNumber)
 	//comments, r, err := c.Client.PullRequests.ListComments(ctx, c.RepoOwner, c.RepoName, pullNum, opt)
-	comments, _, err := c.Client.Issues.ListComments(ctx, c.RepoOwner, c.RepoName, pullNum, nil)
+	var comments []*github.IssueComment
+	opt := &github.IssueListCommentsOptions{
+		ListOptions: github.ListOptions{PerPage: 20},
+	}
+	for {
+		pagedComments, r, err := c.Client.Issues.ListComments(ctx, c.RepoOwner, c.RepoName, pullNum, opt)
+		if err != nil {
+			log.Errorf("Fail to get repository from GitHub, the error is %v", err)
+			return err
+		}
+		comments = append(comments, pagedComments...)
+		log.Info("The page number is: ", opt.Page)
+		if r.NextPage == 0 {
+			break
+		}
+		opt.Page = r.NextPage
+	}
+
 	log.Infoln(c.RepoOwner, c.RepoName, pullNum)
 	log.Infof("The total comments are: %v", len(comments))
 
-	if err != nil {
-		log.Errorf("Fail to get repository from GitHub, the error is %v", err)
-		return err
-	}
 	var deletedComments []int64
 	for _, comment := range comments {
 		if strings.Contains(comment.GetBody(), PR_COMMENT_TITLE) {
@@ -102,8 +115,9 @@ func (c *GitHubClient) deletePreviousComments() error {
 	}
 
 	for _, comment := range deletedComments {
-		c.Client.PullRequests.DeleteComment(ctx, c.RepoOwner, c.RepoName, comment)
+		c.Client.Issues.DeleteComment(ctx, c.RepoOwner, c.RepoName, comment)
 		log.Infof("Try to delete the comment id: %v", comment)
+		time.Sleep(2 * time.Second)
 	}
 
 	return nil
