@@ -102,8 +102,8 @@ func (c *GitHubClient) deletePreviousComments() error {
 	}
 
 	for _, comment := range deletedComments {
-		r, _ := c.Client.PullRequests.DeleteComment(ctx, c.RepoOwner, c.RepoName, comment)
-		log.Infof("Try to delete the comment, is response is %v", r.Response.Body)
+		c.Client.PullRequests.DeleteComment(ctx, c.RepoOwner, c.RepoName, comment)
+		log.Infof("Try to delete the comment id: %v", comment)
 	}
 
 	return nil
